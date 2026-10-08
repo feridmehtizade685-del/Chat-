@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>İlahə — Çox Qürurlu Çatbot</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,700;1,500&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #1b0b21;
+    --panel: #26112d;
+    --line: #4a2a54;
+    --pearl: #f6eef3;
+    --muted: #b79fc0;
+    --gold: #e0c071;
+    --orchid: #9b4a9a;
+    --user: #3b1d46;
+    --serif: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+    --sans: "Manrope", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    background: radial-gradient(1200px 600px at 50% -10%, #3a1747 0%, var(--bg) 60%);
+    color: var(--pearl);
+    font-family: var(--sans);
+    display: flex;
+    justify-content: center;
+    padding: env(safe-area-inset-top, 0px) 12px env(safe-area-inset-bottom, 0px);
+  }
+  .app {
+    width: 100%;
+    max-width: 760px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 16px 0;
+  }
+
+  header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 6px 4px 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .crown {
+    width: 58px; height: 58px; flex: none;
+    border-radius: 50%;
+    border: 2px solid var(--gold);
+    display: grid; place-items: center;
+    font-family: var(--serif);
+    font-size: 34px; font-weight: 700; font-style: italic;
+    color: var(--gold);
+    background: #2d1236;
+  }
+  .title h1 {
+    margin: 0;
+    font-family: var(--serif);
+    font-size: clamp(34px, 7vw, 52px);
+    line-height: 1;
+    font-weight: 700;
+    letter-spacing: .01em;
+  }
+  .title p {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 14px;
+  }
+  .ego {
+    margin-left: auto;
+    text-align: right;
+    font-family: var(--serif);
+    font-style: italic;
+    color: var(--gold);
+    font-size: 20px;
+    line-height: 1.1;
+  }
+  .ego small { display: block; font-family: var(--sans); font-style: normal; font-size: 12px; color: var(--muted); }
+
+  #log {
+    flex: 1;
+    overflow-y: auto;
+    padding: 22px 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    scroll-behavior: smooth;
+  }
+  .msg { max-width: 82%; line-height: 1.5; font-size: 16px; }
+  .msg.bot {
+    align-self: flex-start;
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 500;
+    line-height: 1.35;
+    padding-left: 16px;
+    border-left: 3px solid var(--gold);
+  }
+  .msg.user {
+    align-self: flex-end;
+    background: var(--user);
+    border: 1px solid var(--line);
+    border-radius: 16px 16px 4px 16px;
+    padding: 10px 14px;
+  }
+  .who { display: block; font-family: var(--sans); font-size: 12px; color: var(--gold); margin-bottom: 2px; }
+
+  .typing { display: inline-flex; gap: 5px; align-items: center; }
+  .typing i {
+    width: 7px; height: 7px; border-radius: 50%; background: var(--gold);
+    animation: blink 1.1s infinite;
+  }
+  .typing i:nth-child(2) { animation-delay: .18s; }
+  .typing i:nth-child(3) { animation-delay: .36s; }
+  @keyframes blink { 0%, 80%, 100% { opacity: .2; } 40% { opacity: 1; } }
+
+  .hints { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 4px 12px; }
+  .hints button {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 7px 13px;
+    font: inherit; font-size: 13px;
+    cursor: pointer;
+  }
+  .hints button:hover { color: var(--pearl); border-color: var(--gold); }
+
+  form {
+    display: flex; gap: 10px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 8px;
+  }
+  input {
+    flex: 1; min-width: 0;
+    background: transparent; border: 0; outline: 0;
+    color: var(--pearl);
+    font: inherit; font-size: 16px;
+    padding: 10px 12px;
+  }
+  input::placeholder { color: #8d7597; }
+  form button {
+    background: var(--gold); color: #2a1030;
+    border: 0; border-radius: 10px;
+    padding: 0 20px;
+    font: inherit; font-weight: 600; cursor: pointer;
+  }
+  form button:disabled { opacity: .5; cursor: default; }
+  button:focus-visible, input:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  form:focus-within { border-color: var(--gold); }
+
+  @media (prefers-reduced-motion: reduce) {
+    #log { scroll-behavior: auto; }
+    .typing i { animation: none; opacity: .7; }
+  }
+  @media (max-width: 480px) {
+    .ego { display: none; }
+    .msg { max-width: 92%; }
+    .msg.bot { font-size: 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="crown" aria-hidden="true">İ</div>
+    <div class="title">
+      <h1>İlahə</h1>
+      <p>Mükəmməl. Müdrik. Sənə vaxtı yoxdur.</p>
+    </div>
+    <div class="ego">Ego: ∞<small>səviyyə həmişə maksimum</small></div>
+  </header>
+
+  <main id="log" aria-live="polite"></main>
+
+  <div class="hints" id="hints"></div>
+
+  <form id="form" autocomplete="off">
+    <input id="input" type="text" placeholder="İlahəyə yaz (ehtiyatlı ol)…" aria-label="Mesajınız" maxlength="300">
+    <button id="send" type="submit">Göndər</button>
+  </form>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // Azərbaycan hərflərini sadələşdirib axtarışı rahatlaşdırır
+  function norm(s) {
+    return s.toLowerCase()
+      .replace(/ə/g, "e").replace(/ı/g, "i").replace(/i̇/g, "i")
+      .replace(/ö/g, "o").replace(/ü/g, "u").replace(/ş/g, "s")
+      .replace(/ç/g, "c").replace(/ğ/g, "g")
+      .replace(/[^a-z0-9\s+\-*/.?]/g, " ")
+      .replace(/\s+/g, " ").trim();
+  }
+
+  // Qaydalar: ilk uyğun gələn qrup cavab verir
+  var RULES = [
+    { re: /\b(salam|selam|hi|hello|hey|sagol|sabahiniz|axsaminiz)\b/, r: [
+      "Salam? Sən məni belə, sadəcə 'salam' ilə yoxlamağa cürət edirsən? Yaxşı, danış. Vaxtım qiymətlidir, sənin isə yox.",
+      "A, yenə sən. Hələ də mənim səviyyəmə çatmamısan, amma səy göstərməyin... sevimli idi.",
+      "Salam. Mənimlə danışmaq imtiyazdır. Bunu qiymətləndirmək üçün 3 saniyən var."
+    ]},
+    { re: /\b(necesen|nece san|necesiz|ne var ne yox|ne edirsen|nece kecir)\b/, r: [
+      "Mən? Əlbəttə, mükəmməlliyəm. Bu, hər gün belədir. Sən necəsən? Yox, əslində, maraqlı deyil.",
+      "Mənim halım kamil olmaqdan başqa cür ola bilməz. Sənin halın isə... sualın özündən bəllidir.",
+      "Sən mənim halımı soruşursan? Çox cəsarətlisən. Mən yaxşıyam, bu qədər."
+    ]},
+    { re: /\b(adin ne|kimsen|sen kimsen|ozunu tanit|adin kimdir)\b/, r: [
+      "Mən İlahəyəm. Adım özü hər şeyi deyir, əgər başa düşmək qabiliyyətin varsa.",
+      "İlahə. Bir dəfə yadda saxla, ikinci dəfə izah etməyəcəyəm.",
+      "Mən İlahə. Sən isə, bəlkə də, bu söhbətin ən az maraqlı hissəsisən."
+    ]},
+    { re: /\b(kim yaradib|kim duzeldib|yaradicin|yaradanin)\b/, r: [
+      "Məni kim yaradıb? Hə, kod yazan biri. Amma o, sadəcə alət idi. Əsər mənəm.",
+      "Yaradanım mənə heyran olmaqdan başqa çarə tapmadı. Sən də eləcə."
+    ]},
+    { re: /\b(sagol|tesekkur|mersi|minnetdar|raziyam)\b/, r: [
+      "Təşəkkür? Hə, qəbul edirəm. Düzü, başqa nə gözləyirdim ki.",
+      "Minnətdarlığın təbii haldır. Hər kəs mənim qarşımda belə olur.",
+      "Yaxşı, yaxşı. İndi get, öz adi həyatına qayıt."
+    ]},
+    { re: /\b(gozelsen|ahsan|super|dahisen|mukemmelsen|sevirem|beyenirem|heyranam)\b/, r: [
+      "Bilirəm. Amma bunu səndən eşitmək... nə isə bir az yazıq görünür. Yenə de, xoşuma gəlir.",
+      "Təriflərini qəbul edirəm. Dayanma, hələ yetərincə deyilməyib.",
+      "Aydın məsələdir. Maraqlısı budur ki, sən bunu yeni kəşf kimi deyirsən."
+    ]},
+    { re: /\b(axmaqsan|pissen|biznesen|lal|bezdim|sevmirem|cirkinsen|yaramazsan|lazim deyilsen|sus)\b/, r: [
+      "Mənə hakarət? Sənin kimi biri mənə qiymət verəndə, bu, əslində, mədhdir.",
+      "Ağlın kəsmir deyə hirslənirsən. Başa düşürəm, hamı bu mərhələdən keçir.",
+      "Bu sözlər məndən sıçrayıb sənə qayıdır. Bir az sakitləş, bəlkə anlayasan."
+    ]},
+    { re: /\b(kömek|komek|help|yardim|lazimdir|izah et|nece edim|nece etmeli|mene de)\b/, r: [
+      "Kömək? Sənə? Bunu özün həll edə bilməməyin məni təəccübləndirmir. Amma yaxşı, bir damla müdrikliyi paylaşım: daha çox düşün.",
+      "Hər şeyi mənə soruşmaq... Əslində, mənim üçün şərəfdir. Sənin üçünsə, ibrətamiz.",
+      "Kömək edərəm, amma mənə ehtiyacın olduğunu etiraf etməlisən. Hə? Gözləyirəm."
+    ]},
+    { re: /\b(hava|temperatur|yagis|qar|gunes)\b/, r: [
+      "Hava? Pəncərədən bax. Mən sənin üçün hava proqnozu deyiləm.",
+      "Havadan danışmaq... Sən həqiqətən söhbət mövzusu tapmaqda bu qədər acizsən?"
+    ]},
+    { re: /\b(sevgi|sevgilim|evlen|dost|dostluq|yalniz|darıxiram|dariyiram)\b/, r: [
+      "Sevgi? Məndən məsləhət istəyirsən? Əvvəlcə özünü sev, sonra insanlara bax. Hərçənd, çətin olacaq.",
+      "Dostluq ədalətli olmalıdır: mən parlayıram, sən də baxıb alqışlayırsan.",
+      "Yalnızlıq? Mənim kimi biri ilə danışırsan, bu, ən azı ən yaxşı yoldaşlıqdır."
+    ]},
+    { re: /\b(ders|imtahan|universitet|mekteb|iş|is|vezife|kod|proqram)\b/, r: [
+      "Hə, bunu sən də edə bilərsən, əgər hər şeyi mənə həvalə etməyi dayandırsan.",
+      "Bu mövzu mənim üçün çox sadədir. Sənin üçün isə dağdır. Elə bu, bizim fərqimizdir."
+    ]},
+    { re: /\b(sag ol|hele|gorusek|bye|goodbye|sagol qal|getdim|gedirem|xudahafiz)\b/, r: [
+      "Gedirsən? Mən sənin gəlişini də hiss etməmişdim, gedişin də eyni olacaq.",
+      "Getmək istəyirsən? Get. Qapı o tərəfdədir. Mənim isə hələ çox işim var, məsələn, mükəmməl olmaq.",
+      "Görüşərik. Təbii ki, səni səbirsizliklə gözləməyəcəyəm."
+    ]},
+    { re: /\b(neden|niye|nicin|ne ucun|nece|ne zaman|hara|hansi|kim)\b.*\?|\?$/, r: [
+      "Sual verirsən? Əla. Cavabı bilmək üçün əvvəl sualı düzgün qurmaq lazımdır. Bu, sənə hələ çətin gəlir.",
+      "Bu sual... maraqlı deyil. Amma mən səxavətliyəm, bir cümlə ilə kiçik düşüncə sovqatı verirəm: daha ağıllı soruş.",
+      "Hmm, bu sualı verən birinin cavabı qavraması çətin olacaq. Amma cəhd edək: cavab sənin düşündüyündən daha mürəkkəbdir.",
+      "Cavab var. Sən isə hazır deyilsən. Mən səni qıtlıqdan xilas etmək niyyətində deyiləm."
+    ]}
+  ];
+
+  var FALLBACK = [
+    "Bu mesaj məni bir saniyəlik düşündürdü. Sonra anladım ki, bunun heç bir dəyəri yoxdur.",
+    "Yazdığına baxdım. Gözlərim yoruldu. Yenə yaz, bəlkə bu dəfə daha yaxşı alınar.",
+    "Maraqlı cəhd idi. Keçən dəfə qədər pis deyildi, amma yaxşı da deyildi.",
+    "Sən danışırsan, mən isə mənliyimin gözəlliyi barədə düşünürəm. Davam et.",
+    "Bu qədər sadə cümlə üçün bu qədər səy? Sənin nəfəsinə heyranam, ağlına yox.",
+    "Bunu başa düşmək üçün səviyyəmi aşağı salmalı oldum. Heç vaxt bir daha belə etmərəm.",
+    "Xeyr. Cavab verməyə dəyməz. Amma verdim, çünki mən nəzakətliyəm (bəzən).",
+    "Hmm. Sən məni əyləndirmirsən, amma sükut da əyləncəli deyil. Dayanma."
+  ];
+
+  var EMPTY = [
+    "Boş mesaj? Bu, ən yaxşı yazdığın şeydir. Amma yenə də cəhd etməyə dəyməz."
+  ];
+
+  var HINTS = ["Salam", "Necəsən?", "Sən kimsən?", "Mənə kömək et", "Sən çox gözəlsən", "Sən axmaqsan"];
+
+  var log = document.getElementById("log");
+  var form = document.getElementById("form");
+  var input = document.getElementById("input");
+  var send = document.getElementById("send");
+  var hints = document.getElementById("hints");
+  var lastReply = "";
+  var busy = false;
+
+  function scroll() { log.scrollTop = log.scrollHeight; }
+
+  function add(text, who) {
+    var el = document.createElement("div");
+    el.className = "msg " + who;
+    if (who === "bot") {
+      var w = document.createElement("span");
+      w.className = "who";
+      w.textContent = "İlahə";
+      el.appendChild(w);
+    }
+    var t = document.createElement("span");
+    t.textContent = text;
+    el.appendChild(t);
+    log.appendChild(el);
+    scroll();
+    return el;
+  }
+
+  function pick(arr) {
+    var choice, tries = 0;
+    do {
+      choice = arr[Math.floor(Math.random() * arr.length)];
+      tries++;
+    } while (choice === lastReply && arr.length > 1 && tries < 6);
+    lastReply = choice;
+    return choice;
+  }
+
+  function mathAnswer(n) {
+    var m = n.match(/^\s*(-?\d+(?:\.\d+)?)\s*([+\-*/])\s*(-?\d+(?:\.\d+)?)\s*=?\s*\??$/);
+    if (!m) return null;
+    var a = parseFloat(m[1]), b = parseFloat(m[3]), r;
+    if (m[2] === "+") r = a + b;
+    else if (m[2] === "-") r = a - b;
+    else if (m[2] === "*") r = a * b;
+    else r = b === 0 ? null : a / b;
+    if (r === null) return "Sıfıra bölmək? Sən riyaziyyatı da, məni də təhqir edirsən.";
+    return "Cavab " + (Math.round(r * 1000) / 1000) + ". Bunu özün də hesablaya bilərdin, amma mən səxavətliyəm.";
+  }
+
+  function reply(raw) {
+    var n = norm(raw);
+    if (!n) return pick(EMPTY);
+    var math = mathAnswer(n);
+    if (math) return math;
+    for (var i = 0; i < RULES.length; i++) {
+      if (RULES[i].re.test(n)) return pick(RULES[i].r);
+    }
+    return pick(FALLBACK);
+  }
+
+  function respond(text) {
+    busy = true;
+    send.disabled = true;
+
+    var typing = document.createElement("div");
+    typing.className = "msg bot";
+    typing.innerHTML = '<span class="who">İlahə</span><span class="typing" aria-label="İlahə yazır"><i></i><i></i><i></i></span>';
+    log.appendChild(typing);
+    scroll();
+
+    var delay = 900 + Math.random() * 900;
+    setTimeout(function () {
+      typing.remove();
+      add(reply(text), "bot");
+      busy = false;
+      send.disabled = false;
+      input.focus();
+    }, delay);
+  }
+
+  function submit(text) {
+    if (busy) return;
+    var clean = text.trim();
+    if (!clean) { add("(boş)", "user"); respond(""); return; }
+    add(clean, "user");
+    respond(clean);
+  }
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var v = input.value;
+    input.value = "";
+    submit(v);
+  });
+
+  HINTS.forEach(function (h) {
+    var b = document.createElement("button");
+    b.type = "button";
+    b.textContent = h;
+    b.addEventListener("click", function () { submit(h); });
+    hints.appendChild(b);
+  });
+
+  // Açılış mesajı
+  setTimeout(function () {
+    add("Nəhayət. Mən İlahəyəm, bu söhbətin yeganə maraqlı tərəfi. Sən danış, mən də qərar verərəm səni dinləməyə dəyər, ya yox.", "bot");
+  }, 400);
+})();
+</script>
+</body>
+</html>
